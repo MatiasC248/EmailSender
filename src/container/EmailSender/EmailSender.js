@@ -1,20 +1,29 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Layout from '../../components/Layout/Layout';
 import './EmailSender.css'
 import { sendEmail } from '../../services/SendEmail'
+import Modal from '../../components/Modal/Modal';
 
 const EmailSender = () => {
-    const [ email, setEmail ] = useState('');
-    const [ message, setMessage ] = useState('');
-    const [ subject, setSubject ] = useState('');
+    const [ emailOptions, setEmailOptions ] = useState( {
+        email: '',
+        message: '',
+        subject: ''
+    });
+    useEffect(
+        () => {},[]
+    )
+    const [ showModal, setShowModal ] = useState( false ); 
+    const handleChange = ( e ) => {
+        setEmailOptions( {...emailOptions, [e.target.name]: e.target.value } )
+    }
     const onSendEmail = () => {
-        sendEmail( email, message, subject ).then(
+        sendEmail( emailOptions ).then(
             response => {
                 alert('Se envio el mensaje')
             }
         ).catch(error => {
-            alert('Error');
-            console.log(error)
+            setShowModal(true)
         })
     }
     return (
@@ -25,29 +34,38 @@ const EmailSender = () => {
                         <label className="label">Email</label>
                         <div className="control">
                             <input className="input background-lightblue" 
-                            type="email" placeholder="e.g. alex@example.com"
-                            onChange={ (e) => setEmail( e.target.value )} />
+                            name="email"
+                            type="email" 
+                            placeholder="e.g. alex@example.com"
+                            onChange={ handleChange } />
                         </div>
                     </div>
                     <div className="field">
                         <label className="label">Subject</label>
                         <div className="control">
                             <input className="input background-lightblue" 
-                            type="subject" placeholder="Subject"
-                            onChange={ (e) => setSubject( e.target.value )} />
+                            name="subject"
+                            type="text" 
+                            placeholder="Subject"
+                            onChange={ handleChange } />
                         </div>
                     </div>
                     <div className="field">
                         <label className="label">Message</label>
                         <div className="control">
                             <textarea className="textarea background-lightblue" 
-                            id="textarea-email" placeholder="Write here."
-                            onChange={ (e) => setMessage( e.target.value )} ></textarea>
+                            name="message"
+                            id="textarea-email" 
+                            placeholder="Write here."
+                            onChange={ handleChange } ></textarea>
                         </div>
                     </div>
                     <button className="button is-primary" type='button' onClick={ onSendEmail }>Send email</button>
                 </form>
             </div>
+        { showModal && <Modal closeModal = { () => setShowModal(false) }>
+
+        </Modal>}
         </Layout>
     )
 }
